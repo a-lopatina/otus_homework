@@ -1,23 +1,12 @@
 package ru.atm;
 
-import java.util.List;
+import java.util.Map;
 
-public class Atm {
-    private final BanknoteStorage banknoteStorage = new BanknoteStorage();
+public interface Atm {
 
-    void cashIn(List<BanknoteCell> banknotes){
-        CashDeposit cashDeposit = new CashDeposit(banknoteStorage);
-        cashDeposit.cashIn(banknotes);
-    }
+    void cashIn(Map<Nominal, Integer> banknotes);
 
-    void cashOut(int amount){
-        CashWithdrawal cashWithdrawal = new CashWithdrawal(banknoteStorage);
-        cashWithdrawal.cashOut(amount);
-    }
+    void cashOut(Integer amount);
 
-    int getBalance(){
-        BalanceViewer balanceViewer = new BalanceViewer(banknoteStorage);
-        return balanceViewer.getBalance();
-    }
-
+    Integer getBalance();
 }

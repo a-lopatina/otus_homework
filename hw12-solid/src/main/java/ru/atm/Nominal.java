@@ -2,12 +2,12 @@ package ru.atm;
 
 
 public enum Nominal {
-    _100(100),
-    _200(200),
-    _500(500),
-    _1000(1000),
-    _2000(2000),
-    _5000(5000);
+    NOMINAL_100(100),
+    NOMINAL_200(200),
+    NOMINAL_500(500),
+    NOMINAL_1000(1000),
+    NOMINAL_2000(2000),
+    NOMINAL_5000(5000);
 
     private int value;
 
