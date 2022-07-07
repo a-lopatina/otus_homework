@@ -1,0 +1,77 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Create client</title>
+    <style type="text/css">
+
+        .clients, .clients td {
+            border: 1px solid lightgray;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+    </style>
+
+    <meta charset="UTF-8"/>
+    <title>Клиенты</title>
+
+    <script>
+        function saveClient() {
+            const clientDataContainer = document.getElementById('clientDataContainer');
+            const name = document.getElementById("name").value;
+            const address = document.getElementById("address").value;
+            const phones = document.getElementById("phones").value;
+            fetch('/api/client', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({name: name, address: address, phones: phones})
+            })
+                .then(response => response.json())
+                .then(client => clientDataContainer.innerHTML = 'Клиент сохранен');
+        }
+    </script>
+
+</head>
+<body>
+
+
+<h3>Клиенты:</h3>
+<table class="clients">
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Address</th>
+        <th>Phones</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="client : ${clients}">
+        <td th:text="${client.id}"></td>
+        <td th:text="${client.name}"></td>
+        <td th:text="${client.address}"></td>
+        <td th:text="${client.phones}"></td>
+    </tr>
+    </tbody>
+</table>
+<br>
+<a href="clients">Обновить список клиентов</a>
+
+
+<h3>Добавить клиента</h3>
+<div class="row">
+    <label for="name">Name:</label>
+    <input id="name" name="name" type="text" th:value="${client.name}"/>
+    <label for="address">Address:</label>
+    <input id="address" name="address" type="text" th:value="${client.address}"/>
+    <label for="phones">Phones:</label>
+    <input id="phones" name="phones" type="text" th:value="${client.phones}"/>
+    <button type="button" onclick="saveClient()">Save</button>
+</div>
+
+<pre id="clientDataContainer"></pre>
+
+</body>
+</html>
