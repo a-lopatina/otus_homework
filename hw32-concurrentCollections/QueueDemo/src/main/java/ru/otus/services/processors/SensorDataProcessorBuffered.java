@@ -9,6 +9,8 @@ import ru.otus.lib.SensorDataBufferedWriter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.LinkedBlockingDeque;
 
 // Этот класс нужно реализовать
 public class SensorDataProcessorBuffered implements SensorDataProcessor {
@@ -16,7 +18,7 @@ public class SensorDataProcessorBuffered implements SensorDataProcessor {
 
     private final int bufferSize;
     private final SensorDataBufferedWriter writer;
-    List<SensorData> bufferedData = new ArrayList<>();
+    private final BlockingDeque<SensorData> bufferedData = new LinkedBlockingDeque<>();
 
     public SensorDataProcessorBuffered(int bufferSize, SensorDataBufferedWriter writer) {
         this.bufferSize = bufferSize;
@@ -24,19 +26,20 @@ public class SensorDataProcessorBuffered implements SensorDataProcessor {
     }
 
     @Override
-    public synchronized void process(SensorData data) {
+    public void process(SensorData data) {
         bufferedData.add(data);
         if (bufferedData.size() >= bufferSize) {
             flush();
         }
     }
 
-    public synchronized void flush() {
+    public void flush() {
+        List<SensorData> dataBuffer = new ArrayList<>();
         try {
-            if (!bufferedData.isEmpty()) {
-                bufferedData.sort(Comparator.comparing(SensorData::getMeasurementTime));
-                writer.writeBufferedData(bufferedData);
-                bufferedData = new ArrayList<>();
+            bufferedData.drainTo(dataBuffer);
+            if (!dataBuffer.isEmpty()) {
+                dataBuffer.sort(Comparator.comparing(SensorData::getMeasurementTime));
+                writer.writeBufferedData(dataBuffer);
             }
         } catch (Exception e) {
             log.error("Ошибка в процессе записи буфера", e);
@@ -44,7 +47,7 @@ public class SensorDataProcessorBuffered implements SensorDataProcessor {
     }
 
     @Override
-    public synchronized void onProcessingEnd() {
+    public void onProcessingEnd() {
         flush();
     }
 }
